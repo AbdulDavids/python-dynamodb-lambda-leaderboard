@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Leaderboard Manager - AWS Lambda using SAM
+
+Resources:
+  # The Lambda function
+  LeaderboardFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: leaderboard.lambda_handler
+      Runtime: python3.9
+      CodeUri: .
+      Description: A Lambda function that manages a leaderboard for a championship.
+      Environment:
+        Variables:
+          TABLE_NAME: Leaderboard
+      MemorySize: 128
+      Timeout: 10
+      Policies:
+        - AmazonDynamoDBFullAccess # Granting full access to DynamoDB
+      Events:
+        AddUpdatePoints:
+          Type: Api
+          Properties:
+            Path: /points
+            Method: post
+        GetLeaderboard:
+          Type: Api
+          Properties:
+            Path: /leaderboard
+            Method: get
+        GetParticipantPoints:
+          Type: Api
+          Properties:
+            Path: /participant/{userID}
+            Method: get
+        DeleteParticipant:
+          Type: Api
+          Properties:
+            Path: /participant/{userID}
+            Method: delete
+
+  # The DynamoDB table
+  LeaderboardTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Leaderboard
+      AttributeDefinitions:
+        - AttributeName: userID
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userID
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+Outputs:
+  LeaderboardApi:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+  LeaderboardFunctionArn:
+    Description: "Leaderboard Lambda Function ARN"
+    Value: !GetAtt LeaderboardFunction.Arn
