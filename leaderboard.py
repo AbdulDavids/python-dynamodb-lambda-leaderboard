@@ -2,10 +2,11 @@ import json
 import boto3
 
 # Use DynamoDB
-# dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.resource('dynamodb')
 
 # Use the local DynamoDB instance
-dynamodb = boto3.resource('dynamodb', endpoint_url='http://localhost:8000')
+# dynamodb = boto3.resource('dynamodb', endpoint_url='http://localhost:8000')
+
 table = dynamodb.Table('Leaderboard')
 
 
@@ -21,7 +22,8 @@ def lambda_handler(event, context):
 			body = json.loads(event['body'])
 			user_id = body['userID']
 			event_points = body['points']
-			return add_or_update_points(user_id, event_points)
+			print(f'Adding {event_points} points for user {user_id}')
+			return set_points(user_id, event_points)
 
 		elif http_method == 'GET' and path == '/leaderboard':
 			limit = int(event['queryStringParameters'].get('limit', 10))
@@ -34,6 +36,11 @@ def lambda_handler(event, context):
 		elif http_method == 'DELETE' and path.startswith('/participant/'):
 			user_id = event['pathParameters']['userID']
 			return delete_participant(user_id)
+		elif http_method == 'GET':
+			return {
+				'statusCode': 200,
+				'body': json.dumps({'message': 'Welcome to the Leaderboard API'})
+			}
 
 		else:
 			return {
@@ -85,32 +92,32 @@ def get_participant_points(user_id):
 		}
 
 
-def add_or_update_points(user_id, event_points):
+def set_points(user_id, new_points):
 	"""
-	Adds points for a participant. If the participant does not exist, they are added.
-	:param user_id: The ID of the participant
-	:param event_points: The points to add to the participant's total
-	:return: The response from DynamoDB after updating the item
-	"""
-	response = table.get_item(Key={'userID': user_id})
+    Sets the points for a participant to a specified value. If the participant does not exist, they are added.
+    :param user_id: The ID of the participant
+    :param new_points: The points to set for the participant
+    :return: The response from DynamoDB after updating the item
+    """
 
-	if 'Item' in response:
-		total_points = response['Item']['points'] + event_points
-	else:
-		total_points = event_points
+	print(f"Setting points for {user_id} to {new_points}")
 
-	# Update the leaderboard
+	# Update the leaderboard or add a new entry
 	table.put_item(
 		Item={
 			'userID': user_id,
-			'points': total_points
+			'points': new_points
 		}
 	)
 
-	return {
+	print(f'User {user_id} now has {new_points} points')
+
+	response = {
 		'statusCode': 200,
-		'body': json.dumps({'message': f'User {user_id} now has {total_points} points'})
+		'body': json.dumps({'message': f'User {user_id} now has {new_points} points'})
 	}
+
+	return response
 
 
 def delete_participant(user_id):

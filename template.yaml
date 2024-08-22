@@ -15,12 +15,17 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME: Leaderboard
-      MemorySize: 128
-      Timeout: 10
+      MemorySize: 512
+      Timeout: 15
       Policies:
         - AmazonDynamoDBFullAccess # Granting full access to DynamoDB
       Events:
-        AddUpdatePoints:
+        GetIndex:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get
+        SetPoints:
           Type: Api
           Properties:
             Path: /points
@@ -53,8 +58,8 @@ Resources:
         - AttributeName: userID
           KeyType: HASH
       ProvisionedThroughput:
-        ReadCapacityUnits: 5
-        WriteCapacityUnits: 5
+        ReadCapacityUnits: 50
+        WriteCapacityUnits: 50
 
 Outputs:
   LeaderboardApi:
