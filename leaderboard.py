@@ -17,9 +17,16 @@ def lambda_handler(event, context):
     print(f'Event: {event}')
     print(f'Context: {context}')
     try:
-        http_method = event['httpMethod']
-        print(f'Received {http_method} request, path: {event["path"]}')
-        path = event['path']
+
+
+        http_method = event['requestContext']['http']['method']
+        path = event['requestContext']['http']['path']
+
+        print(f'HTTP method: {http_method}')
+        print(f'Path: {path}')
+
+        print(f'Event: {event}')
+        print(f'Context: {context}')
 
         if http_method == 'POST' and path == '/points':
             body = json.loads(event['body'])
