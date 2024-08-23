@@ -9,7 +9,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: leaderboard.lambda_handler
-      Runtime: python3.11
+      Runtime: python3.12
       CodeUri: .
       Description: A Lambda function that manages a leaderboard for a championship.
       Environment:
