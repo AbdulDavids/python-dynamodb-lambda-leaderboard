@@ -14,8 +14,11 @@ def lambda_handler(event, context):
     """
     Entry point for the Lambda function to handle different API requests
     """
+    print(f'Event: {event}')
+    print(f'Context: {context}')
     try:
         http_method = event['httpMethod']
+        print(f'Received {http_method} request, path: {event["path"]}')
         path = event['path']
 
         if http_method == 'POST' and path == '/points':
@@ -39,6 +42,7 @@ def lambda_handler(event, context):
             return delete_participant(user_id)
 
         elif http_method == 'GET':
+            print("Welcome to the Leaderboard API")
             return {
                 'statusCode': 200,
                 'body': json.dumps({'message': 'Welcome to the Leaderboard API'})
