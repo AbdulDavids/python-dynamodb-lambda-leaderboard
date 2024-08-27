@@ -15,7 +15,7 @@ def lambda_handler(event, context):
     """
 	print(f'Event: {event}')
 	print(f'Context: {context}')
-	print(f'NEON_DB_URL: {NEON_DB_URL}
+	print(f'NEON_DB_URL: {NEON_DB_URL}')
 	try:
 
 		http_method = event['requestContext']['http']['method']
