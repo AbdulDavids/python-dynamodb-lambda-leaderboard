@@ -1,9 +1,9 @@
 import json
 import psycopg2
+import os
 from psycopg2.extras import RealDictCursor
 
-NEON_DB_URL = "postgresql://Leaderboard_owner:6i0VTIBxuwrq@ep-square-brook-a56bzbfg.us-east-2.aws.neon.tech/Leaderboard?sslmode=require"
-
+NEON_DB_URL = os.environ['NEON_DB_URL']
 
 def get_db_connection():
 	return psycopg2.connect(NEON_DB_URL, cursor_factory=RealDictCursor)
