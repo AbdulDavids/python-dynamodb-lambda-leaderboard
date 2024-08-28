@@ -1,6 +1,6 @@
 # Leaderboard Manager
 
-This project implements a leaderboard management system using AWS Lambda and DynamoDB. It includes functions for adding/updating points, retrieving the leaderboard, and managing participants. The project uses AWS SAM CLI for local development and testing.
+This project implements a leaderboard management system using AWS Lambda and [Neon](https://neon.tech/). It includes functions for adding/updating points, retrieving the leaderboard, and managing participants. The project uses AWS SAM CLI for local development and testing.
 
 
 ## Prerequisites
@@ -9,7 +9,7 @@ Ensure you have the following installed on your system:
 
 - **AWS CLI**: [Installation Guide](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 - **AWS SAM CLI**: [Installation Guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html)
-- **Docker**: Required for running DynamoDB locally. [Installation Guide](https://docs.docker.com/get-docker/)
+- **Docker**: [Installation Guide](https://docs.docker.com/get-docker/)
 
 ## Setup Instructions
 
@@ -24,35 +24,14 @@ cd leaderboard-manager
 
 If not installed, follow the official [AWS SAM CLI Installation Guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) to set it up.
 
-## Running DynamoDB Locally
-
-To simulate the DynamoDB environment locally, you need to run DynamoDB Local using Docker:
-
-```bash
-docker run -p 8000:8000 amazon/dynamodb-local
-```
-
-## Creating the DynamoDB Table Locally
-
-After running DynamoDB locally, you need to create the `Leaderboard` table:
-
-```bash
-aws dynamodb create-table \
-    --table-name Leaderboard \
-    --attribute-definitions AttributeName=userID,AttributeType=S \
-    --key-schema AttributeName=userID,KeyType=HASH \
-    --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
-    --endpoint-url http://localhost:8000
-```
-
 ## Testing Locally with SAM CLI
 
 ### 1. **Update the Code for Local Testing**
 
-Ensure the `app.py` file is configured to point to your local DynamoDB instance:
+Ensure the `app.py` file is configured to use your NeonDB.
 
 ```python
-dynamodb = boto3.resource('dynamodb', endpoint_url='http://localhost:8000')
+NEON_DB_URL=<YOUR_DATABASE_URL>
 ```
 
 ### 2. **Run the Lambda Function Locally**
